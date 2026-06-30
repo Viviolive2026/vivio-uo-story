@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivio Life — University of Oregon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16241D;
+    --ink-soft:#1F3128;
+    --paper:#F7F4EA;
+    --paper-dim:#EBE6D8;
+    --gold:#D9A441;
+    --coral:#E2614A;
+    --mist:#9FB3A8;
+    --line: rgba(247,244,234,0.14);
+    --line-dark: rgba(22,36,29,0.12);
+    --max: 920px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:400;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:500; letter-spacing:-0.01em;}
+  a{color:inherit;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:""; width:18px; height:1px; background:var(--gold); display:inline-block;}
+
+  /* ---- thread ---- */
+  #thread-wrap{
+    position:fixed; left:0; top:0; height:100vh; width:64px;
+    z-index:5; pointer-events:none;
+    display:flex; justify-content:center;
+  }
+  #thread-svg{height:100%; width:2px; overflow:visible;}
+  #thread-path{
+    stroke:var(--mist); stroke-width:1.5; fill:none; opacity:0.35;
+  }
+  #thread-progress{
+    stroke:var(--gold); stroke-width:2; fill:none;
+    stroke-dasharray: 4000;
+    stroke-dashoffset: 4000;
+  }
+  .node{
+    position:absolute; left:50%; transform:translate(-50%,-50%);
+    width:9px; height:9px; border-radius:50%;
+    background:var(--ink-soft); border:1.5px solid var(--mist);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .node.lit{
+    background:var(--gold); border-color:var(--gold);
+    box-shadow:0 0 14px 2px rgba(217,164,65,0.6);
+  }
+  @media (max-width: 760px){ #thread-wrap{width:28px;} }
+
+  section{
+    position:relative;
+    padding: 120px 32px 120px calc(64px + 32px);
+    max-width: calc(var(--max) + 96px);
+    margin:0 auto;
+  }
+  @media (max-width: 760px){
+    section{padding: 90px 22px 90px 56px;}
+  }
+  .inner{max-width:var(--max); margin:0 auto;}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity 0.8s ease, transform 0.8s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---- hero ---- */
+  #hero{
+    min-height:100vh; display:flex; align-items:center;
+    padding-top:80px;
+  }
+  .hero-mark{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--mist); margin-bottom:46px;
+  }
+  h1.display{
+    font-size:clamp(40px, 6.4vw, 78px);
+    line-height:0.98;
+    font-weight:500;
+  }
+  h1.display em{font-style:italic; color:var(--gold); font-weight:500;}
+  .hero-sub{
+    margin-top:28px; max-width:560px; font-size:18px; color:var(--mist);
+  }
+  .hero-split{
+    margin-top:64px; display:grid; grid-template-columns:1fr 1fr; gap:24px;
+    border-top:1px solid var(--line); padding-top:32px;
+  }
+  @media (max-width:680px){ .hero-split{grid-template-columns:1fr;} }
+  .hero-split h4{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:10px; font-weight:500;
+  }
+  .hero-split p{font-size:15px; color:var(--mist);}
+
+  /* ---- problem ---- */
+  .stack{display:flex; flex-direction:column; gap:0; margin-top:48px;}
+  .stack-row{
+    display:grid; grid-template-columns:120px 1fr; gap:28px;
+    padding:26px 0; border-top:1px solid var(--line);
+  }
+  .stack-row:last-child{border-bottom:1px solid var(--line);}
+  @media (max-width:600px){ .stack-row{grid-template-columns:1fr;} }
+  .stack-row .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--coral);
+    text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .stack-row h3{font-size:19px; font-weight:500; margin-bottom:6px;}
+  .stack-row p{color:var(--mist); font-size:15px;}
+
+  .pull{
+    font-family:'Fraunces', serif; font-style:italic; font-size:clamp(22px,3vw,30px);
+    line-height:1.4; color:var(--paper); margin:56px 0 0; max-width:680px;
+  }
+
+  /* ---- light section ---- */
+  .light{background:var(--paper); color:var(--ink);}
+  .light .eyebrow{color:var(--coral);}
+  .light .eyebrow::before{background:var(--coral);}
+  .light .mist-text{color:#5C6A60;}
+  .light .stack-row{border-color:var(--line-dark);}
+
+  /* trust grid */
+  .trust-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line-dark); margin-top:44px; border:1px solid var(--line-dark);
+  }
+  @media (max-width:680px){ .trust-grid{grid-template-columns:1fr;} }
+  .trust-cell{background:var(--paper); padding:26px 22px;}
+  .trust-cell h4{font-size:15px; font-weight:600; margin-bottom:8px;}
+  .trust-cell p{font-size:13.5px; color:#5C6A60;}
+
+  /* ---- competitive table ---- */
+  .comp-table{margin-top:48px; border-top:1px solid var(--line);}
+  .comp-row{
+    display:grid; grid-template-columns: 1.1fr 1.4fr 1.4fr;
+    border-bottom:1px solid var(--line); padding:20px 0;
+    gap:18px; align-items:start;
+  }
+  @media (max-width:680px){ .comp-row{grid-template-columns:1fr;} }
+  .comp-row.highlight{background:rgba(217,164,65,0.07);}
+  .comp-row .who{font-weight:600; font-size:15px;}
+  .comp-row .what{font-size:13.5px; color:var(--mist); margin-top:4px;}
+  .comp-row .gap{font-size:13px; color:var(--coral); margin-top:6px; font-style:italic;}
+  .comp-row.highlight .gap{color:var(--gold);}
+
+  /* ---- phone mock ---- */
+  .phone-row{
+    display:grid; grid-template-columns: 1fr 320px; gap:48px; align-items:center;
+    margin-top:48px;
+  }
+  @media (max-width:760px){ .phone-row{grid-template-columns:1fr; justify-items:center;} }
+  .phone{
+    width:280px; border-radius:32px; background:var(--ink-soft);
+    border:1px solid var(--line); padding:18px; box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+  }
+  .phone-screen{
+    background:var(--paper); border-radius:18px; padding:22px 18px; color:var(--ink); min-height:380px;
+  }
+  .ps-label{font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:#8a8170; margin-bottom:14px;}
+  .ps-h{font-family:'Fraunces',serif; font-size:20px; margin-bottom:6px;}
+  .ps-sub{font-size:13px; color:#5C6A60; margin-bottom:18px;}
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+  .chip{
+    font-size:12px; padding:6px 11px; border-radius:20px; background:#EFEAD9; border:1px solid #DCD4BC;
+  }
+  .chip.on{background:var(--gold); border-color:var(--gold); color:var(--ink); font-weight:600;}
+  .match-card{
+    margin-top:14px; border:1px solid #E1DAC4; border-radius:14px; padding:14px;
+    background:#FFFEFA;
+  }
+  .match-pct{font-family:'Fraunces',serif; font-size:30px; color:var(--coral);}
+  .cta-btn{
+    margin-top:16px; display:inline-block; background:var(--ink); color:var(--paper);
+    font-size:13px; padding:11px 16px; border-radius:8px; font-weight:500;
+  }
+
+  /* ---- mini phone strip (onboarding steps) ---- */
+  .phone-strip{
+    display:flex; gap:20px; overflow-x:auto; margin-top:44px; padding:6px 6px 22px 6px;
+    scroll-snap-type:x proximity;
+  }
+  .phone-strip::-webkit-scrollbar{height:6px;}
+  .phone-strip::-webkit-scrollbar-thumb{background:var(--line-dark); border-radius:6px;}
+  .phone-mini{
+    flex:0 0 208px; scroll-snap-align:start;
+    border-radius:24px; background:var(--ink-soft); border:1px solid var(--line);
+    padding:12px; box-shadow:0 18px 36px -16px rgba(0,0,0,0.45);
+  }
+  .light .phone-mini{background:var(--ink); border-color:rgba(22,36,29,0.18);}
+  .phone-mini .pm-screen{
+    background:var(--paper); border-radius:14px; padding:16px 13px; color:var(--ink); min-height:300px;
+    display:flex; flex-direction:column;
+  }
+  .pm-step{font-family:'IBM Plex Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.07em; color:var(--coral); margin-bottom:10px;}
+  .pm-h{font-family:'Fraunces',serif; font-size:16px; margin-bottom:10px; line-height:1.15;}
+  .pm-row{font-size:11.5px; color:#5C6A60; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+  .pm-scanned{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#2E7D52;
+    background:#E3F1E9; border:1px solid #BFE0CC; padding:3px 8px; border-radius:5px; margin-bottom:14px;
+  }
+  .pm-chip-row{display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;}
+  .pm-chip{font-size:10.5px; padding:4px 8px; border-radius:14px; background:#EFEAD9; border:1px solid #DCD4BC;}
+  .pm-chip.on{background:var(--gold); border-color:var(--gold); color:var(--ink); font-weight:600;}
+  .pm-check{font-size:11.5px; margin-bottom:9px; display:flex; gap:7px; align-items:flex-start;}
+  .pm-check .box{width:13px; height:13px; border-radius:3px; background:var(--gold); color:var(--ink); font-size:9px; display:flex; align-items:center; justify-content:center; flex:none; margin-top:1px;}
+  .pm-cta{margin-top:auto; font-size:11px; background:var(--ink); color:var(--paper); padding:9px 12px; border-radius:7px; text-align:center; font-weight:500;}
+  .pm-match-pct{font-family:'Fraunces',serif; font-size:24px; color:var(--coral); margin-bottom:2px;}
+
+  /* ---- gamification ---- */
+  .loop-flow{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:40px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+  }
+  .loop-step{
+    border:1px solid rgba(217,164,65,0.4); color:var(--gold); padding:8px 14px; border-radius:20px;
+  }
+  .loop-arrow{color:var(--mist); font-size:13px;}
+  .score-card{
+    border:1px solid var(--line); border-radius:14px; padding:24px; background:var(--ink-soft); margin-top:20px;
+  }
+  .score-top{display:flex; align-items:baseline; gap:12px;}
+  .score-num{font-family:'Fraunces',serif; font-size:46px; color:var(--gold);}
+  .score-delta{font-family:'IBM Plex Mono',monospace; font-size:13px; color:#7FB89A;}
+  .score-lbl{font-size:12px; color:var(--mist); margin-top:4px; text-transform:uppercase; letter-spacing:0.05em;}
+  .score-foot{display:flex; gap:24px; margin-top:18px; padding-top:16px; border-top:1px solid var(--line); font-size:13px; color:var(--paper);}
+  .score-foot span{color:var(--gold); font-weight:600;}
+  .nudge-card{
+    border:1px solid var(--line); border-radius:14px; padding:22px; background:var(--ink); margin-top:20px;
+  }
+  .nudge-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--coral); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;}
+  .nudge-card p{font-size:14px; color:var(--mist);}
+  .nudge-quote{font-style:italic; font-family:'Fraunces',serif; font-size:15px; color:var(--paper); margin-top:10px;}
+  .nudge-btns{display:flex; gap:10px; margin-top:16px;}
+  .nudge-btns .b1{background:var(--gold); color:var(--ink); font-weight:600; font-size:12.5px; padding:8px 14px; border-radius:7px;}
+  .nudge-btns .b2{border:1px solid var(--line); color:var(--mist); font-size:12.5px; padding:8px 14px; border-radius:7px;}
+  .event-row{display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line); font-size:13.5px;}
+  .event-row:first-child{border-top:none;}
+  .event-row .pop{color:var(--coral); font-size:11px; font-family:'IBM Plex Mono',monospace;}
+
+  /* ---- dashboard mock ---- */
+  .dash{
+    margin-top:48px; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--ink-soft);
+  }
+  .dash-top{
+    display:flex; justify-content:space-between; align-items:center; padding:18px 22px; border-bottom:1px solid var(--line);
+  }
+  .dash-top .who{font-size:14px;}
+  .dash-top .who span{color:var(--mist); font-size:12px; display:block;}
+  .dash-stats{display:grid; grid-template-columns:repeat(3,1fr); }
+  @media (max-width:600px){ .dash-stats{grid-template-columns:1fr;} }
+  .dash-stat{padding:22px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .dash-stat:last-child{border-right:none;}
+  .dash-stat .num{font-family:'Fraunces',serif; font-size:34px; color:var(--gold);}
+  .dash-stat .lbl{font-size:12px; color:var(--mist); margin-top:4px;}
+  .dash-stat .delta{font-size:11px; color:#7FB89A; margin-top:6px; font-family:'IBM Plex Mono',monospace;}
+  .dash-foot{display:grid; grid-template-columns:1fr 1fr; }
+  @media (max-width:600px){ .dash-foot{grid-template-columns:1fr;} }
+  .dash-foot div{padding:20px 22px; border-right:1px solid var(--line); border-top:1px solid var(--line);}
+  .dash-foot div:last-child{border-right:none;}
+  .dash-foot h5{font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--mist); margin-bottom:10px; font-family:'IBM Plex Mono',monospace;}
+  .dash-foot p{font-size:13px;}
+
+  /* ---- before after ---- */
+  .ba-grid{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:48px; border:1px solid var(--line-dark);}
+  @media (max-width:760px){ .ba-grid{grid-template-columns:1fr;} }
+  .ba-col{padding:30px 26px;}
+  .ba-col.without{background:#EFE9DA;}
+  .ba-col.with{background:var(--ink); color:var(--paper);}
+  .ba-col h4{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:20px;}
+  .ba-col.without h4{color:#9c5a4a;}
+  .ba-col.with h4{color:var(--gold);}
+  .ba-item{padding:14px 0; border-top:1px solid rgba(0,0,0,0.08);}
+  .ba-col.with .ba-item{border-top:1px solid var(--line);}
+  .ba-item:first-of-type{border-top:none;}
+  .ba-item .t{font-size:13px; font-weight:600; margin-bottom:4px;}
+  .ba-item .d{font-size:13px; opacity:0.78;}
+
+  /* ---- setup steps ---- */
+  .steps{margin-top:48px;}
+  .step{display:grid; grid-template-columns:64px 1fr; gap:24px; padding:30px 0; border-top:1px solid var(--line);}
+  .step:last-child{border-bottom:1px solid var(--line);}
+  .step .num{font-family:'Fraunces',serif; font-size:32px; color:var(--gold); font-style:italic;}
+  .step h3{font-size:19px; margin-bottom:8px;}
+  .step p{color:var(--mist); font-size:14.5px; max-width:560px;}
+  .step .badge{
+    display:inline-block; margin-top:12px; font-family:'IBM Plex Mono',monospace; font-size:11px;
+    color:var(--gold); border:1px solid rgba(217,164,65,0.4); padding:5px 10px; border-radius:6px;
+  }
+
+  /* ---- financial ---- */
+  .num-row{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line-dark); border:1px solid var(--line-dark); margin-top:44px;}
+  @media (max-width:700px){ .num-row{grid-template-columns:1fr 1fr;} }
+  .num-cell{background:var(--paper); padding:26px 18px;}
+  .num-cell .n{font-family:'Fraunces',serif; font-size:30px; color:var(--coral);}
+  .num-cell .l{font-size:12px; color:#5C6A60; margin-top:6px;}
+  .big-math{
+    margin-top:40px; background:var(--ink); color:var(--paper); border-radius:14px; padding:36px;
+    display:flex; flex-wrap:wrap; gap:28px; align-items:center; justify-content:space-between;
+  }
+  .big-math .figure{font-family:'Fraunces',serif; font-size:clamp(38px,5vw,56px); color:var(--gold);}
+  .big-math .cap{font-size:13px; color:var(--mist); max-width:340px;}
+
+  /* ---- close ---- */
+  #close{min-height:100vh; display:flex; align-items:center;}
+  .close-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:56px; margin-top:48px;}
+  @media (max-width:760px){ .close-grid{grid-template-columns:1fr;} }
+  .why-list{display:flex; flex-direction:column; gap:14px; margin-top:24px;}
+  .why-item{display:flex; gap:12px; align-items:flex-start; font-size:15px;}
+  .why-item .dot{width:6px; height:6px; border-radius:50%; background:var(--gold); margin-top:8px; flex:none;}
+  .ttv{border:1px solid var(--line); border-radius:14px; padding:26px;}
+  .ttv-row{display:flex; justify-content:space-between; padding:14px 0; border-top:1px solid var(--line);}
+  .ttv-row:first-child{border-top:none;}
+  .ttv-row .v{font-family:'Fraunces',serif; color:var(--gold); font-size:18px;}
+  .ttv-row .k{font-size:12px; color:var(--mist); max-width:150px; text-align:right;}
+
+  .cta-final{
+    margin-top:64px; border-top:1px solid var(--line); padding-top:40px;
+  }
+  .cta-final h2{font-size:clamp(28px,4vw,42px); max-width:560px;}
+  .cta-final p{color:var(--mist); margin-top:14px; max-width:480px; font-size:15px;}
+  .footer-meta{
+    margin-top:50px; padding-top:24px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mist); letter-spacing:0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div id="thread-wrap">
+  <svg id="thread-svg" viewBox="0 0 2 1000" preserveAspectRatio="none">
+    <path id="thread-path" d="M1,0 L1,1000"/>
+    <path id="thread-progress" d="M1,0 L1,1000"/>
+  </svg>
+  <div id="nodes"></div>
+</div>
+
+<!-- 1: HERO -->
+<section id="hero" data-node>
+  <div class="inner">
+    <div class="hero-mark">Vivio Life · Community Platform</div>
+    <h1 class="display reveal">Find your <em>Vibe</em>.<br>Find your <em>Tribe</em>.</h1>
+    <p class="hero-sub reveal">The AI-native belonging platform built for University of Oregon housing and student-success teams — the layer that turns first-years into a community, and belonging into retention.</p>
+    <div class="hero-split">
+      <div class="reveal">
+        <h4>For Ducks, day one</h4>
+        <p>90-second onboarding to a matched floormate. Vibe-curated events. A sense of belonging in the dorms — before the first week of classes in Eugene.</p>
+      </div>
+      <div class="reveal">
+        <h4>For UO Housing &amp; Student Success</h4>
+        <p>At-risk signals weeks before a student stops showing up. Automated programming. The belonging that drives first-year retention.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2: PROBLEM -->
+<section data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">The problem &amp; the opportunity</div>
+    <h2 class="reveal" style="font-size:clamp(28px,4vw,42px); max-width:680px;">Most students who leave UO never fail a class. The first year is where you lose them.</h2>
+    <p class="pull reveal">Often not because of academics or money. Because they never found their people — and no one knew until they didn't re-enroll.</p>
+
+    <div class="stack reveal">
+      <div class="stack-row">
+        <div class="tag">Day one</div>
+        <div><h3>A first-year arrives in Eugene knowing no one.</h3><p>Your team works to connect them — but at scale across the residence halls, some always slip through.</p></div>
+      </div>
+      <div class="stack-row">
+        <div class="tag">Unseen</div>
+        <div><h3>Isolation forms quietly, with no signal reaching staff.</h3><p>The hall looks fine. It isn't.</p></div>
+      </div>
+      <div class="stack-row">
+        <div class="tag">Too late</div>
+        <div><h3>You learn the cost at re-enrollment.</h3><p>Months after the student already decided.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3: RESPONSIBLE AI -->
+<section class="light" data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">Responsible AI · Trust by design</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:640px;">AI that serves every student — and earns UO's trust.</h2>
+    <p class="mist-text reveal" style="margin-top:16px; max-width:600px; font-size:15px;">Vivio uses AI to surface belonging, never to judge students — built privacy-first, human-in-the-loop, and designed to reach the students most likely to be missed.</p>
+
+    <div class="trust-grid reveal">
+      <div class="trust-cell"><h4>Private</h4><p>Opt-in by design. Staff see who may need a check-in — never message content, DMs, or raw logs.</p></div>
+      <div class="trust-cell"><h4>Human-led</h4><p>AI surfaces a signal; people decide. It supports staff judgment — it never acts on a student automatically.</p></div>
+      <div class="trust-cell"><h4>Equitable</h4><p>Built to catch the students who quietly disconnect first — first-gen, transfer, far-from-home — so support reaches everyone.</p></div>
+      <div class="trust-cell"><h4>Transparent</h4><p>Students know what's collected and can opt out anytime. No hidden scoring, no surveillance.</p></div>
+      <div class="trust-cell"><h4>Accountable</h4><p>Signals are measured against UO's own baseline — not a black-box label put on a student.</p></div>
+      <div class="trust-cell"><h4>Yours</h4><p>UO's data stays UO's, used only to serve your students — deleted or returned on request.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4: COMPETITIVE LANDSCAPE -->
+<section data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">The competitive landscape</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:640px;">Campus belonging is crowded with point tools — but nobody owns this part.</h2>
+    <p style="color:var(--mist); margin-top:14px; max-width:580px; font-size:15px;" class="reveal">Here's where every player sits, and where Vivio Life plugs in alongside UO's existing systems.</p>
+
+    <div class="comp-table reveal">
+      <div class="comp-row">
+        <div class="who">Move-in &amp; orientation tools</div>
+        <div class="what">Orientation scheduling, move-in logistics, checklists, one-time welcome events.</div>
+        <div class="gap">Does not address: who the student knows, or whether they belong by week 3.</div>
+      </div>
+      <div class="comp-row">
+        <div class="who">Campus Groups · Engage</div>
+        <div class="what">Club/org directories, event listings &amp; RSVPs, attendance tracking, broadcast announcements.</div>
+        <div class="gap">Does not address: whether a quiet first-year ever finds their people.</div>
+      </div>
+      <div class="comp-row">
+        <div class="who">Banner · Workday · EAB</div>
+        <div class="what">Records, registration, academic advising &amp; alerts, degree planning, early-alert on grades.</div>
+        <div class="gap">Does not address: social belonging — they flag academic risk, not isolation.</div>
+      </div>
+      <div class="comp-row highlight">
+        <div class="who">Vivio Life — the missing layer</div>
+        <div class="what">Engages students by Vibe Type. Curates connections &amp; events by Vibe. Auto-calculates belonging score daily. Delivers at-risk signals to res-life — runs autonomously, integrates with UO's SIS as needed.</div>
+        <div class="gap">This is the belonging gap behind much of UO's first-year attrition.</div>
+      </div>
+    </div>
+    <p class="pull reveal" style="margin-top:40px; font-size:20px;">We don't compete with your SIS. We don't replace academic advising. We're the social half of retention.</p>
+  </div>
+</section>
+
+<!-- 5: ONBOARDING -->
+<section class="light" data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">Student experience · Onboarding</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:600px;">90 seconds. QR scan to a matched floormate.</h2>
+    <p class="mist-text reveal" style="margin-top:14px; max-width:560px; font-size:15px;">A first-year just moved into a UO residence hall. They know no one. Here's what happens next — entirely on their phone, before the first week of classes.</p>
+
+    <p style="font-size:13px; color:#8a8170; margin-top:10px;" class="reveal">Four screens, ~90 seconds, swipe through what the student actually sees →</p>
+
+    <div class="phone-strip reveal">
+      <div class="phone-mini">
+        <div class="pm-screen">
+          <div class="pm-step">Step 1 of 4 — QR scan</div>
+          <div class="pm-scanned">SCANNED ✓</div>
+          <div class="pm-h">Welcome aboard</div>
+          <div class="pm-row">🏢 Hamilton Complex · Floor 4</div>
+          <div class="pm-row">👥 14 floormates already inside</div>
+          <div class="pm-cta">Join the community →</div>
+        </div>
+      </div>
+      <div class="phone-mini">
+        <div class="pm-screen">
+          <div class="pm-step">Step 2 of 4 — 45 seconds</div>
+          <div class="pm-h">Your vibe ✦</div>
+          <div style="font-size:11px; color:#8a8170; margin-bottom:6px;">Energy type</div>
+          <div class="pm-chip-row">
+            <span class="pm-chip">Introvert</span><span class="pm-chip on">Ambivert</span><span class="pm-chip">Extrovert</span>
+          </div>
+          <div style="font-size:11px; color:#8a8170; margin:10px 0 6px;">Your interests</div>
+          <div class="pm-chip-row">
+            <span class="pm-chip on">🎨 Creative</span><span class="pm-chip on">📚 Study</span><span class="pm-chip on">🍜 Foodie</span><span class="pm-chip">🎵 Music</span><span class="pm-chip">🏃 Fitness</span>
+          </div>
+          <div class="pm-cta">Next →</div>
+        </div>
+      </div>
+      <div class="phone-mini">
+        <div class="pm-screen">
+          <div class="pm-step">Step 3 of 4</div>
+          <div class="pm-h">Community pledge</div>
+          <div class="pm-check"><div class="box">✓</div>I'll say hi first</div>
+          <div class="pm-check"><div class="box">✓</div>I'll show up to what I RSVP</div>
+          <div class="pm-check"><div class="box">✓</div>I'll respect quiet hours</div>
+          <div class="pm-cta">Show my match →</div>
+        </div>
+      </div>
+      <div class="phone-mini">
+        <div class="pm-screen">
+          <div class="pm-step">Step 4 of 4 — Match reveal</div>
+          <div class="pm-h">Your match ✦</div>
+          <div class="pm-match-pct">94%</div>
+          <div style="font-size:11px; color:#5C6A60; margin-bottom:8px;">compatible</div>
+          <div style="font-weight:600; font-size:13px;">Jordan Park</div>
+          <div style="font-size:11px; color:#5C6A60; margin-bottom:8px;">Floor 4 · Ambivert</div>
+          <div class="pm-chip-row"><span class="pm-chip on">Study</span><span class="pm-chip on">Foodie</span></div>
+          <div class="pm-cta">👋 Say hey to Jordan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5b: GAMIFICATION -->
+<section data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">Student experience · Engagement &amp; gamification</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:620px;">The loop that turns floormates into a community.</h2>
+    <p style="color:var(--mist); margin-top:14px; max-width:580px; font-size:15px;" class="reveal">Two event streams. Smart nudges when life gets busy. Public pledges that make events actually happen — and a score that makes belonging visible to the student themselves.</p>
+
+    <div class="loop-flow reveal">
+      <div class="loop-step">Match</div><div class="loop-arrow">→</div>
+      <div class="loop-step">Event</div><div class="loop-arrow">→</div>
+      <div class="loop-step">Pledge</div><div class="loop-arrow">→</div>
+      <div class="loop-step">Vibe Score</div><div class="loop-arrow">→</div>
+      <div class="loop-step">Nudge</div><div class="loop-arrow">→</div>
+      <div class="loop-step">At-risk signal</div><div class="loop-arrow">→</div>
+      <div class="loop-step">Retention</div>
+    </div>
+
+    <div class="phone-row reveal" style="margin-top:48px; align-items:flex-start;">
+      <div>
+        <h4 style="font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--gold); margin-bottom:10px;">Vibe Score — the visible score</h4>
+        <div class="score-card">
+          <div class="score-top"><div class="score-num">82</div><div class="score-delta">↑ +4 pts this week</div></div>
+          <div class="score-lbl">Your Vibe Score</div>
+          <div class="score-foot">
+            <div><span>3</span> active pledges</div>
+            <div><span>12</span> connections made</div>
+          </div>
+        </div>
+
+        <h4 style="font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--gold); margin:28px 0 10px;">Smart nudge — re-engage before they drift</h4>
+        <div class="nudge-card">
+          <div class="nudge-tag">⏰ 9 days quiet</div>
+          <p>Life got busy. We noticed. Jordan just posted a study group for Thursday.</p>
+          <div class="nudge-quote">"You're both free Thursday evenings. 5 others already going."</div>
+          <div class="nudge-btns"><div class="b1">I'm in ✓</div><div class="b2">Later</div></div>
+        </div>
+      </div>
+
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="ps-label">Community · This week</div>
+          <div class="event-row"><div><div style="font-weight:600;">📚 Study Session</div><div style="font-size:11px; color:#5C6A60;">Thu 7pm · Jordan · 6 RSVPs</div></div></div>
+          <div class="event-row"><div><div style="font-weight:600;">🎬 Hall Movie Night</div><div style="font-size:11px; color:#5C6A60;">Sat 8pm · Res Life · 22 going, 3 left</div></div><div class="pop">🔥 Popular</div></div>
+          <div class="event-row"><div><div style="font-weight:600;">🎨 Sketchbook Share</div><div style="font-size:11px; color:#5C6A60;">Sun 3pm · Maya hosts · 4 RSVPs</div></div></div>
+          <a class="cta-btn" style="margin-top:18px;">RSVP + pledge →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-split reveal" style="margin-top:48px;">
+      <div><h4>Zero staff overhead</h4><p>Events run themselves. Nudges fire automatically. Staff touch only res-life-seeded anchors.</p></div>
+      <div><h4>A semester of lead time</h4><p>Nudge fires at day 9. At-risk signal reaches staff long before the re-enrollment decision.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6: DASHBOARD -->
+<section data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">Housing &amp; student success · Dashboard</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:600px;">The AI runs it. UO staff just act on the signals.</h2>
+    <p style="color:var(--mist); margin-top:14px; font-size:15px;" class="reveal">7 days of student signals — distilled into a 30-second read for a Director of Residence Life.</p>
+
+    <div class="dash reveal">
+      <div class="dash-top">
+        <div class="who">UO Residence Life <span>First-years across UO's residence halls</span></div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--mist);">This week</div>
+      </div>
+      <div class="dash-stats">
+        <div class="dash-stat"><div class="num">78</div><div class="lbl">Community Engagement Score</div><div class="delta">↑ +6 pts this week</div></div>
+        <div class="dash-stat"><div class="num">84%</div><div class="lbl">App onboarding rate</div><div class="delta">↑ 14 new students joined</div></div>
+        <div class="dash-stat"><div class="num">62%</div><div class="lbl">Event attendance rate</div><div class="delta">↑ vs 41% last month</div></div>
+      </div>
+      <div class="dash-foot">
+        <div><h5>Staff see</h5><p>Engagement score · at-risk signals (semester lead) · RSVP &amp; attendance · new peer connections · anonymous feedback · monthly retention report.</p></div>
+        <div><h5>Staff never see</h5><p>Raw chat logs or transcripts · private messages or DMs · personal onboarding data · message content · who reported whom.</p></div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:var(--mist); margin-top:18px;" class="reveal">Runs alongside Banner, Workday, StarRez, Colleague — start standalone, integrate when UO is ready.</p>
+  </div>
+</section>
+
+<!-- 7: BEFORE/AFTER -->
+<section class="light" data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">Housing &amp; res life</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:600px;">A Director of Residence Life's week, before and after Vivio Life.</h2>
+
+    <div class="ba-grid reveal">
+      <div class="ba-col without">
+        <h4>Without Vivio Life</h4>
+        <div class="ba-item"><div class="t">Monday</div><div class="d">Walk the halls, make small talk with RAs, try to sense how first-years are settling in. Usually learn nothing actionable.</div></div>
+        <div class="ba-item"><div class="t">Mid-week</div><div class="d">Guess what students want. Post a flyer. 6 people show up. No data on why, no follow-up.</div></div>
+        <div class="ba-item"><div class="t">Re-enrollment</div><div class="d">Find out a first-year isn't coming back. First time hearing about it. Too late to change the outcome.</div></div>
+        <div class="ba-item"><div class="t">End of term</div><div class="d">"Things seem OK." No data to back it up, no early warning given.</div></div>
+      </div>
+      <div class="ba-col with">
+        <h4>With Vivio Life</h4>
+        <div class="ba-item"><div class="t">Monday — 15 min</div><div class="d">Dashboard open. Belonging score up 6 pts. 3 at-risk signals. 7 new connections. More signal than a week of hallway conversations.</div></div>
+        <div class="ba-item"><div class="t">Mid-week — 30 min</div><div class="d">Posts one event using Vivio's "best time" suggestion. 22 RSVPs. Reminders automated. Feedback collects itself.</div></div>
+        <div class="ba-item"><div class="t">Day 12 of disengagement</div><div class="d">At-risk signal fires for a student. RA does a warm check-in. Student feels seen, re-enrolls — a full semester early.</div></div>
+        <div class="ba-item"><div class="t">End of month — 20 min</div><div class="d">Pull the belonging/retention report. Fully data-backed. Send to the Dean.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8: GETTING STARTED -->
+<section data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">Getting started · University of Oregon setup</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:600px;">Rapid onboarding. Two steps. Pilot timeline scoped for UO.</h2>
+    <p style="color:var(--mist); margin-top:14px; max-width:600px; font-size:15px;" class="reveal">Begin in the Discord / GroupMe community students already use — no app to download, no opt-in cliff. Opt-in only, with no education records on the consumer surface. SIS integration and dashboards are Phase 2, after data-security review.</p>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>Share your student roster</h3>
+          <p>Standard CSV export — works with StarRez, Banner, Workday, Colleague, whatever UO Housing uses. Upload once to get started; submit updates anytime, refreshed weekly during the pilot.</p>
+          <div class="badge">One-time setup · ~5 minutes</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>Meet students where they already are</h3>
+          <p>Instrument the hall's existing Discord/GroupMe server, or Vivio stands one up — zero install, the lowest-friction path. For students who prefer a dedicated app, a QR card in move-in packets opens the same experience, same signal, same scoring. Combined coverage target: 70%+.</p>
+          <div class="badge">Primary: Discord/GroupMe · App optional</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:var(--gold); margin-top:8px;" class="reveal">Phase 2 — on roadmap: SIS integration (Banner, Workday, StarRez), embedded staff dashboards, self-serve res-life admin. Available post-pilot, after data-security review.</p>
+  </div>
+</section>
+
+<!-- 9: FINANCIAL IMPACT -->
+<section class="light" data-node>
+  <div class="inner">
+    <div class="eyebrow reveal">The bonus · Financial impact</div>
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,38px); max-width:600px;">Time to value — measured in retention.</h2>
+    <p class="mist-text reveal" style="margin-top:14px; max-width:580px; font-size:15px;">First-year attrition isn't an academics failure. Much of it is belonging-driven — and it's costing UO tuition already spent to win the student.</p>
+
+    <div class="num-row reveal">
+      <div class="num-cell"><div class="n">6–10%</div><div class="l">First-year attrition rate (IPEDS/NCES, large public universities)</div></div>
+      <div class="num-cell"><div class="n">~$21K</div><div class="l">Net tuition + wasted recruiting, per student lost</div></div>
+      <div class="num-cell"><div class="n">+5–25</div><div class="l">Points of belonging-driven attrition recoverable</div></div>
+      <div class="num-cell"><div class="n">$5M+</div><div class="l">Addressable first-year loss, per cohort</div></div>
+    </div>
+
+    <div class="big-math reveal">
+      <div>
+        <div class="figure">~$567K</div>
+        <div class="cap" style="margin-top:6px;">Tuition protected per cohort (mid case) — 10% of belonging-addressable attrition recovered, ~27 students retained × ~$21K each.</div>
+      </div>
+      <div style="font-size:13px; color:var(--mist); max-width:220px;">Payback measured against a number UO already reports. Pricing scoped per institution.</div>
+    </div>
+    <p style="font-size:12px; color:#8a8170; margin-top:18px;" class="reveal">Sources: IPEDS/NCES · SHEEO SHEF FY24-25 · RNL. Retention lift is modeled, not yet Vivio-measured — the pilot establishes the real recovery rate.</p>
+  </div>
+</section>
+
+<!-- 10: CLOSE -->
+<section id="close" data-node>
+  <div class="inner" style="width:100%;">
+    <div class="eyebrow reveal">From a QR code at move-in, to a cohort that re-enrolls.</div>
+    <h2 class="reveal" style="font-size:clamp(30px,4.4vw,48px); max-width:680px;">Why University of Oregon would choose Vivio Life.</h2>
+    <p style="color:var(--mist); margin-top:16px; max-width:560px; font-size:15px;" class="reveal">Your LMS handles courses. Your SIS owns records. Your housing system assigns beds. Nobody has built the social fabric of the hall itself. That's the white space Vivio Life was built for.</p>
+
+    <div class="close-grid reveal">
+      <div>
+        <div class="why-list">
+          <div class="why-item"><div class="dot"></div>At-risk signals a semester early</div>
+          <div class="why-item"><div class="dot"></div>Live belonging / engagement score</div>
+          <div class="why-item"><div class="dot"></div>Data-backed event targeting</div>
+          <div class="why-item"><div class="dot"></div>Meets students on Discord / GroupMe — where Ducks already are</div>
+          <div class="why-item"><div class="dot"></div>Also fits incoming master's cohorts &amp; international grad students</div>
+        </div>
+      </div>
+      <div class="ttv">
+        <div class="ttv-row"><div class="k">Student onboarding</div><div class="v">90 sec</div></div>
+        <div class="ttv-row"><div class="k">Avg. time to first real floormate connection</div><div class="v">48 hrs</div></div>
+        <div class="ttv-row"><div class="k">Lead time vs. finding out at re-enrollment</div><div class="v">1 semester</div></div>
+        <div class="ttv-row"><div class="k">Pilot availability from contract signing</div><div class="v">90 days</div></div>
+      </div>
+    </div>
+
+    <div class="cta-final reveal">
+      <h2>Let's start the conversation — 30 minutes.</h2>
+      <p>I'd like to understand UO's halls and first-year retention goals — then show you exactly what Vivio Life would surface on your campus.</p>
+      <p style="margin-top:18px; font-size:13px; color:var(--gold);">Lighthouse pilots now open — hands-on onboarding included, co-creation pricing for early partners, no long-term commitment. FERPA &amp; data-security review supported.</p>
+
+      <div class="footer-meta">
+        <div>Vivio Life LLC · Seattle, WA · vivio.life</div>
+        <div>Built by a founder with 25+ years in enterprise partnerships — Google, Microsoft, Apple, Boeing, T-Mobile.</div>
+        <div>Proprietary &amp; confidential — for authorized recipients only</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  // thread: place nodes at each section's vertical center proportionally, light up on scroll
+  const sections = document.querySelectorAll('section[data-node]');
+  const nodesWrap = document.getElementById('nodes');
+  const progressPath = document.getElementById('thread-progress');
+
+  function layoutNodes(){
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    nodesWrap.innerHTML = '';
+    sections.forEach((sec)=>{
+      const rect = sec.getBoundingClientRect();
+      const top = rect.top + window.scrollY + rect.height/2;
+      const pct = Math.min(100, Math.max(0, (top / (document.documentElement.scrollHeight)) * 100));
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.style.top = pct + '%';
+      node.dataset.center = top;
+      nodesWrap.appendChild(node);
+    });
+  }
+
+  function updateThread(){
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrolled = window.scrollY;
+    const pct = docHeight > 0 ? Math.min(1, scrolled / docHeight) : 0;
+    const len = 4000;
+    progressPath.style.strokeDashoffset = (len - len*pct).toString();
+
+    const nodes = document.querySelectorAll('.node');
+    nodes.forEach(n=>{
+      const center = parseFloat(n.dataset.center);
+      if(scrolled + window.innerHeight*0.55 >= center){
+        n.classList.add('lit');
+      } else {
+        n.classList.remove('lit');
+      }
+    });
+  }
+
+  window.addEventListener('load', ()=>{ layoutNodes(); updateThread(); });
+  window.addEventListener('resize', ()=>{ layoutNodes(); updateThread(); });
+  window.addEventListener('scroll', updateThread);
+</script>
+
+</body>
+</html>
