@@ -255,12 +255,14 @@
   .nudge-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--coral); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;}
   .nudge-card p{font-size:14px; color:var(--mist);}
   .nudge-quote{font-style:italic; font-family:'Fraunces',serif; font-size:15px; color:var(--paper); margin-top:10px;}
+  .pm-screen .nudge-quote{color:var(--ink);}
   .nudge-btns{display:flex; gap:10px; margin-top:16px;}
   .nudge-btns .b1{background:var(--gold); color:var(--ink); font-weight:600; font-size:12.5px; padding:8px 14px; border-radius:7px;}
   .nudge-btns .b2{border:1px solid var(--line); color:var(--mist); font-size:12.5px; padding:8px 14px; border-radius:7px;}
   .event-row{display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line); font-size:13.5px;}
   .event-row:first-child{border-top:none;}
   .event-row .pop{color:var(--coral); font-size:11px; font-family:'IBM Plex Mono',monospace;}
+  .pm-screen .event-row{border-top-color:var(--line-dark); color:var(--ink);}
 
   /* ---- dashboard mock ---- */
   .dash{
@@ -365,11 +367,11 @@
   <div class="inner">
     <div class="hero-mark">Vivio Life · Community Platform</div>
     <h1 class="display reveal">Find your <em>Vibe</em>.<br>Find your <em>Tribe</em>.</h1>
-    <p class="hero-sub reveal">The AI-native belonging platform built for University of Oregon housing and student-success teams — the layer that turns first-years into a community, and belonging into retention.</p>
+    <p class="hero-sub reveal">The AI-native belonging platform built for University of Oregon housing and student-success teams — the layer that connects students to floormates, clubs, classes, and campus events, and turns those connections into retention.</p>
     <div class="hero-split">
       <div class="reveal">
         <h4>For Ducks, day one</h4>
-        <p>90-second onboarding to a matched floormate. Vibe-curated events. A sense of belonging in the dorms — before the first week of classes in Eugene.</p>
+        <p>90-second onboarding to a matched floormate — plus vibe-curated clubs, classes, and campus events. A sense of belonging that extends past the dorm, before the first week of classes in Eugene.</p>
       </div>
       <div class="reveal">
         <h4>For UO Housing &amp; Student Success</h4>
@@ -383,7 +385,7 @@
 <section data-node>
   <div class="inner">
     <div class="eyebrow reveal">The problem &amp; the opportunity</div>
-    <h2 class="reveal" style="font-size:clamp(28px,4vw,42px); max-width:680px;">Most students who leave UO never fail a class. The first year is where you lose them.</h2>
+    <h2 class="reveal" style="font-size:clamp(28px,4vw,42px); max-width:680px;">Most students who leave UO never fail a class. They fail to make connections.</h2>
     <p class="pull reveal">Often not because of academics or money. Because they never found their people — and no one knew until they didn't re-enroll.</p>
 
     <div class="stack reveal">
@@ -446,7 +448,7 @@
       </div>
       <div class="comp-row highlight">
         <div class="who">Vivio Life — the missing layer</div>
-        <div class="what">Engages students by Vibe Type. Curates connections &amp; events by Vibe. Auto-calculates belonging score daily. Delivers at-risk signals to res-life — runs autonomously, integrates with UO's SIS as needed.</div>
+        <div class="what">Matches students by Vibe Type to floormates, clubs, classes, and campus events. Auto-calculates belonging score daily. Delivers at-risk signals to res-life — runs autonomously, integrates with UO's SIS as needed.</div>
         <div class="gap">This is the belonging gap behind much of UO's first-year attrition.</div>
       </div>
     </div>
@@ -532,34 +534,34 @@
       <div class="loop-step">Retention</div>
     </div>
 
-    <div class="phone-row reveal" style="margin-top:48px; align-items:flex-start;">
-      <div>
-        <h4 style="font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--gold); margin-bottom:10px;">Vibe Score — the visible score</h4>
-        <div class="score-card">
-          <div class="score-top"><div class="score-num">82</div><div class="score-delta">↑ +4 pts this week</div></div>
-          <div class="score-lbl">Your Vibe Score</div>
-          <div class="score-foot">
-            <div><span>3</span> active pledges</div>
-            <div><span>12</span> connections made</div>
-          </div>
-        </div>
+    <p style="font-size:13px; color:#8a8170; margin-top:38px;" class="reveal">Two screens the student actually sees →</p>
 
-        <h4 style="font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--gold); margin:28px 0 10px;">Smart nudge — re-engage before they drift</h4>
-        <div class="nudge-card">
-          <div class="nudge-tag">⏰ 9 days quiet</div>
-          <p>Life got busy. We noticed. Jordan just posted a study group for Thursday.</p>
-          <div class="nudge-quote">"You're both free Thursday evenings. 5 others already going."</div>
-          <div class="nudge-btns"><div class="b1">I'm in ✓</div><div class="b2">Later</div></div>
+    <div class="phone-strip reveal" style="margin-top:18px;">
+      <div class="phone-mini" style="flex-basis:240px;">
+        <div class="pm-screen" style="min-height:340px;">
+          <div class="pm-step">Your Day</div>
+          <div class="score-card" style="margin:0 0 16px; padding:16px;">
+            <div class="score-top"><div class="score-num" style="font-size:36px;">82</div><div class="score-delta" style="font-size:11px;">↑ +4 pts</div></div>
+            <div class="score-lbl" style="font-size:10px;">Your Vibe Score</div>
+            <div class="score-foot" style="font-size:11px; gap:16px; margin-top:12px; padding-top:12px;">
+              <div><span>3</span> pledges</div>
+              <div><span>12</span> connections</div>
+            </div>
+          </div>
+          <div class="nudge-tag" style="font-size:9.5px;">⏰ 9 days quiet</div>
+          <p style="font-size:11px; color:#5C6A60; margin-bottom:6px;">Jordan just posted a study group for Thursday.</p>
+          <div class="nudge-quote" style="font-size:12px; margin-top:4px;">"You're both free Thursday evenings."</div>
+          <div class="pm-cta" style="margin-top:14px;">I'm in ✓</div>
         </div>
       </div>
 
-      <div class="phone">
-        <div class="phone-screen">
-          <div class="ps-label">Community · This week</div>
-          <div class="event-row"><div><div style="font-weight:600;">📚 Study Session</div><div style="font-size:11px; color:#5C6A60;">Thu 7pm · Jordan · 6 RSVPs</div></div></div>
-          <div class="event-row"><div><div style="font-weight:600;">🎬 Hall Movie Night</div><div style="font-size:11px; color:#5C6A60;">Sat 8pm · Res Life · 22 going, 3 left</div></div><div class="pop">🔥 Popular</div></div>
-          <div class="event-row"><div><div style="font-weight:600;">🎨 Sketchbook Share</div><div style="font-size:11px; color:#5C6A60;">Sun 3pm · Maya hosts · 4 RSVPs</div></div></div>
-          <a class="cta-btn" style="margin-top:18px;">RSVP + pledge →</a>
+      <div class="phone-mini" style="flex-basis:240px;">
+        <div class="pm-screen" style="min-height:340px;">
+          <div class="pm-step">Community · This week</div>
+          <div class="event-row" style="padding:10px 0; font-size:12px;"><div><div style="font-weight:600;">📚 Study Session</div><div style="font-size:10px; color:#8a8170;">Thu 7pm · Jordan · 6 RSVPs</div></div></div>
+          <div class="event-row" style="padding:10px 0; font-size:12px;"><div><div style="font-weight:600;">🎬 Hall Movie Night</div><div style="font-size:10px; color:#8a8170;">Sat 8pm · 22 going, 3 left</div></div><div class="pop" style="font-size:9.5px;">🔥 Popular</div></div>
+          <div class="event-row" style="padding:10px 0; font-size:12px;"><div><div style="font-weight:600;">🎨 Sketchbook Share</div><div style="font-size:10px; color:#8a8170;">Sun 3pm · Maya hosts</div></div></div>
+          <div class="pm-cta">RSVP + pledge →</div>
         </div>
       </div>
     </div>
@@ -686,6 +688,7 @@
     <div class="close-grid reveal">
       <div>
         <div class="why-list">
+          <div class="why-item"><div class="dot"></div>Connects students beyond the dorm — floormates, clubs, classes, and campus events</div>
           <div class="why-item"><div class="dot"></div>At-risk signals a semester early</div>
           <div class="why-item"><div class="dot"></div>Live belonging / engagement score</div>
           <div class="why-item"><div class="dot"></div>Data-backed event targeting</div>
